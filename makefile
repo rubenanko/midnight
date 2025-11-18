@@ -2,15 +2,15 @@
 
 all: crackme
 
-crackme: midnight.asm build
-	nasm -f bin -o build/midnight midnight.asm
+crackme: src/midnight.asm build
+	nasm -f bin -o build/midnight src/midnight.asm
 	chmod +x build/midnight
 
 build:
 	mkdir build
 
-size: midnight
-	@stat -c%s midnight
+size: build/midnight
+	@stat -c%s build/midnight
 
 help:
 	@echo "Commandes disponibles:"

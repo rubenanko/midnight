@@ -24,7 +24,7 @@ ehdr_size equ $ - ehdr
 ; Program Header
 phdr:
     dd 1                     ; p_type: PT_LOAD
-    dd 5                     ; p_flags: PF_R | PF_X
+    dd 5                     ; p_flags: PF_R | PF_X ;; exécution de la stack
     dq 0                     ; p_offset
     dq $$                    ; p_vaddr
     dq $$                    ; p_paddr
@@ -39,6 +39,7 @@ _start:
     pop rdi ;; le premier argument : l'exécutable
     pop rdi ;; le second argument : la chaine en entrée
     call get_length ;; fausse condition de taille pour embrouiller les camarades
+    db 0x62
     dq 0x5403565545125344 ;; instruction overlapping
     dq 0x3104840387452923 ;; instruction overlapping
     dq 0x1320444702638491 ;; instruction overlapping
@@ -52,6 +53,7 @@ get_length:
     je .length_end ;; get_length prends la suite de _start et déroule la suite du programme.
     inc dl
     jmp .length_loop
+    dw 0x54
     dq 0x8461338410134865 ;; instruction overlapping
     dq 0x6235411016105610 ;; instruction overlapping
 .length_end:
