@@ -70,6 +70,106 @@ get_length:
     dq 0x6235411016105610 ;; instruction overlapping
 .length_end:
     cmp dl,9
+    jge .fake_check_cesar1
+    jl .fake_check_cesar2
+    db 0x33
+    dq 0x6235411016105610 ;; instruction overlapping
+    dq 0x8461338410134865 ;; instruction overlapping
+
+.fake_check_cesar1: ;; fausse comparaison avec un chiffré de césar, avec génération d'un hash dans r9
+    test cl,cl
+    je .tmp1
+    jmp .tmp2
+    db 0x62
+    dq 0x8511535110134865 ;; instruction overlapping   
+.tmp2:
+    xor cl,cl
+    jmp .tmp1
+    db 0x12
+    dq 0x6235411016105610 ;; instruction overlapping
+    dq 0x8461338410134865 ;; instruction overlapping   
+.tmp1:
+    mov r8,0x6E7169716F757165   ;; "kosmogol" + 2
+.loop_fake_check_cesar1:
+    cmp cl,8
+    je .pre_fake_check_cesar2
+    sub r8b,2
+    cmp BYTE [rdi+rcx],r8b
+    jne .continue
+    shr r8,8
+    mov r10b,BYTE [rdi+rcx]
+    imul r10,r10,2
+    add r9,r10
+    imul r9,r9,42
+    inc cl
+
+    jmp .loop_fake_check_cesar1
+
+    db 0x12
+    dq 0x6235411016105610 ;; instruction overlapping
+    dq 0x8461338410134865 ;; instruction overlapping
+    dq 0x6235411016105610 ;; instruction overlapping
+    dq 0x8461338410134865 ;; instruction overlapping   
+
+
+.pre_fake_check_cesar2:
+    add rdi,8
+    jmp .fake_check_cesar2
+    db 0x12
+    dq 0x6235411016105610 ;; instruction overlapping
+    dq 0x8461338410134865 ;; instruction overlapping
+    dq 0x6235411016105610 ;; instruction overlapping
+    dq 0x8461338410134865 ;; instruction overlapping  
+
+.fake_check_cesar2: ;; si le mdp commence par kosmogol, on passe dans le deuxième faux check 
+    test cl,cl ;; qui multiplie nième octet du hash avec le nième octet de r8
+    je .tmp3 ;;  et prends le premier octet de la multiplication pour le comparer avec le nième de rdi+8, 
+    jmp .tmp4 ;; l'égalité est vérifiée si rdi+8 = shadok
+    db 0x62
+    dq 0x8511535110134865 ;; instruction overlapping
+
+.tmp4:
+    xor cl,cl
+    jmp .tmp3
+    db 0x12
+    dq 0x6235411016105610 ;; instruction overlapping
+    dq 0x8461338410134865 ;; instruction overlapping
+
+.tmp3:
+    mov r8,0x6E716c10a85cdbfb ;; r9 = 0x6ff5fbc058d78
+
+.loop_fake_check_cesar2:
+    cmp BYTE [rdi+rcx],0
+    je .pre_exit_with_error
+
+    mov r10b,r8b
+    mov r11b,r9b
+
+    add r10,r11
+    mov dl,r10b
+    cmp dl,byte[rdi+rcx]
+
+    jne .continue
+    shr r8,8
+    shr r9,8
+    inc cl
+    jmp .loop_fake_check_cesar2
+
+    db 0x12
+    dq 0x6235411016105610 ;; instruction overlapping
+    dq 0x8461338410134865 ;; instruction overlapping
+    dq 0x6235411016105610 ;; instruction overlapping
+    dq 0x8461338410134865 ;; instruction overlapping   
+
+.pre_exit_with_error:
+    mov rax,r9
+    add rax,0x36
+    jmp .exit_with_error
+
+.continue:
+    ;; preparation des registres
+
+    ;; generation de la fonction
 
     ;; cette portion est à réutiliser dans la partie critique en stack
     ;; print ok
@@ -82,10 +182,16 @@ get_length:
     push rsp
     pop rsi
     syscall
-    
     ;; exit 0
-    xor rdi,rdi
+    push 0
+    pop rdi
     mov rax,0x3c
+    syscall
+
+.exit_with_error:
+    ;; exit 1
+    push 1
+    pop rdi
     syscall
 
 filesize equ $ - $$
