@@ -17,7 +17,7 @@ ehdr:
     dw phdr_size             ; e_phentsize
     dw 1                     ; e_phnum
     dw 0                     ; e_shentsize
-    dw 0                     ; e_shnum
+    dw 0                     ; e_shnum <------------- à modifier notammment pour corrompre le header
     dw 0                     ; e_shstrndx
 ehdr_size equ $ - ehdr
 
@@ -33,7 +33,31 @@ phdr:
     dq 0x1000                ; p_align
 phdr_size equ $ - phdr
 
+;; point d'entrée
 _start:
+    pop rdi ;; le nombre d'arguments
+    pop rdi ;; le premier argument : l'exécutable
+    pop rdi ;; le second argument : la chaine en entrée
+    call get_length ;; fausse condition de taille pour embrouiller les camarades
+    dq 0x5403565545125344 ;; instruction overlapping
+    dq 0x3104840387452923 ;; instruction overlapping
+    dq 0x1320444702638491 ;; instruction overlapping
+    dq 0x4380109662308712 ;; instruction overlapping
+    dq 0x1684063102329871 ;; instruction overlapping
+
+;; capture la taille de la chaine dans rdi (entrée utilisateur)
+get_length:
+.length_loop:
+    cmp BYTE [rdi+rdx],0x00
+    je .length_end ;; get_length prends la suite de _start et déroule la suite du programme.
+    inc dl
+    jmp .length_loop
+    dq 0x8461338410134865 ;; instruction overlapping
+    dq 0x6235411016105610 ;; instruction overlapping
+.length_end:
+    cmp dl,9
+
+    ;; cette portion est à réutiliser dans la partie critique en stack
     ;; print ok
     push 1
     pop rax
