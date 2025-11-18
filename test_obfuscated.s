@@ -2,7 +2,8 @@ global _start
 
 ;; programme de test de la construction dynamique du code via le script python
 ;; nasm -f elf64 test_obfuscated.s -o test_obfuscated.o
-;; ld -z execstack -o test_obfuscated test_obfuscated.o
+;; ld -z execstack -o test_obfuscated test_obfuscated.o -> la taille est énorme à cause de ld mais on le contourne
+;; construisant directement le header et en compilant en mode brut
 
 section .text
 _start:

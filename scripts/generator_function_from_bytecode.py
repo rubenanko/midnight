@@ -3,7 +3,7 @@ from tqdm import tqdm
 import os.path
 import sys
 
-HELP_MESSAGE = "usage: python generator_function_from_opcode.py [-h | --help] file_name starting_key\n\nwrites an x64 asm function that pushes to the stack each bytes\nrepresented by pairs of hexadecimal digits space-separated in\nthe input file name in the reversed order, in a file named output.s\nthe resulting function obfuscate the data in a silly way, by summing\nthe difference between the last pushed byte and the next byte, to the\nlast pushed byte. This process is initialised with an arbitrary byte\nof your choice (starting_key)\n\n\t-h, --help\t shows this help message\n\tfile name\t name of the file containing the opcodes"
+HELP_MESSAGE = "usage: python generator_function_from_bytecode.py [-h | --help] file_name starting_key\n\nwrites an x64 asm function that pushes to the stack each bytes\nrepresented by pairs of hexadecimal digits space-separated in\nthe input file name in the reversed order, in a file named output.s\nthe resulting function obfuscate the data in a silly way, by summing\nthe difference between the last pushed byte and the next byte, to the\nlast pushed byte. This process is initialised with an arbitrary byte\nof your choice (starting_key)\n\n\t-h, --help\t shows this help message\n\tfile name\t name of the file containing the bytecode"
 OUTPUT_FILENAME = "output.s"
 
 
@@ -30,16 +30,16 @@ def generate_asm(filename: str, starting_key : chr) -> None:
         difference = int(byte,16) - last_byte
 
         if difference < 0:
-            tmp_instruction += f"sub cl,{hex(-difference)}\nadd rax,rcx\n"
+            tmp_instruction += f"sub cl,{hex(-difference)}\nadd al,cl\n"
         else:
-            tmp_instruction += f"add cl,{hex(difference)}\nadd rax,rcx\n"
+            tmp_instruction += f"add cl,{hex(difference)}\nadd al,cl\n"
 
         qword_counter += 1
         last_byte = int(byte,16)
 
         if qword_counter == 8:
             qword_counter = 0
-            asm_code += tmp_instruction + "push rax\nxor rax,rax\n"
+            asm_code += tmp_instruction + "push rax\nshl rax,8\n"
             tmp_instruction = ""
         else:
             tmp_instruction += "shl rax,8\n"

@@ -15,7 +15,7 @@ ehdr:
     dd 0                     ; e_flags
     dw ehdr_size             ; e_ehsize
     dw phdr_size             ; e_phentsize
-    dw 1                     ; e_phnum
+    dw 2                     ; e_phnum
     dw 0                     ; e_shentsize
     dw 0                     ; e_shnum <------------- à modifier notammment pour corrompre le header
     dw 0                     ; e_shstrndx
@@ -32,6 +32,18 @@ phdr:
     dq filesize              ; p_memsz
     dq 0x1000                ; p_align
 phdr_size equ $ - phdr
+
+; Program Header 2 pour exécution de la stack
+phdr2:
+    dd 0x6474e551            ; p_type = PT_GNU_STACK 
+    dd 7                     ; p_flags = PF_R | PF_W | PF_X  
+    dq 0                     ; p_offset = 0
+    dq 0                     ; p_vaddr = 0
+    dq 0                     ; p_paddr = 0
+    dq 0                     ; p_filesz = 0
+    dq 0                     ; p_memsz = 0
+    dq 8                     ; p_align = 8 (pas important)
+phdr2_size equ $ - phdr2
 
 ;; point d'entrée
 _start:
