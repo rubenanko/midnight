@@ -34,7 +34,7 @@ Si la comparaison échoue, le programme exit avec un code d'erreur. Si elle réu
 
 Deux prédicats opaques sont insérés stratégiquement dans le code pour créer des branches mortes qui ne seront jamais prises mais compliquent l'analyse.
 
-Le premier prédicat exploite une propriété mathématique : le carré d'un nombre modulo 2 est toujours pair. On calcule `rdx * rdx` puis on teste le bit de parité avec `test al, 1`. Le jump conditionnel `jnz .never_taken_1` pointe vers un faux exit qui ne sera jamais exécuté.
+Le premier prédicat exploite une propriété mathématique : le carré d'un nombre modulo 2 est toujours pair. On calcule `rdx * rdx` puis on teste le bit de parité avec `test al, 1`. Le jump conditionnel pointe vers un faux exit qui ne sera jamais exécuté.
 
 Le second prédicat repose sur la congruence `7x mod 2 = x mod 2`. On calcule 7x via `lea r10, [rax + rax*8]` suivi de deux soustractions, puis on XOR avec la valeur originale.
 
@@ -60,6 +60,6 @@ Cette propriété permet de copier dynamiquement le code sur la pile exécutable
 
 Le chiffrement reste facilement inversible malgré l'obfuscation. Pour chaque octet chiffré c, on peut tester les 256 valeurs possibles de b jusqu'à trouver celle qui satisfait `((b XOR 4) + b) & 0xFF = c`.
 
-Cette recherche exhaustive nécessite au maximum 256 * 16 = 4096 tests, exécutables en quelques millisecondes. Un script Python trivial peut donc récupérer le mot de passe à partir des valeurs TARGET_HASH hardcodées dans le binaire.
+Cette recherche exhaustive nécessite au maximum 256 \* 16 = 4096 tests, exécutables en quelques millisecondes. Un script Python trivial peut donc récupérer le mot de passe à partir des valeurs TARGET_HASH hardcodées dans le binaire.
 
 L'obfuscation vise à compliquer l'identification de l'algorithme et la localisation des constantes de comparaison, pas à rendre le problème cryptographiquement dur.
