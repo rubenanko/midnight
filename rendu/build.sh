@@ -1,0 +1,1 @@
+nasm -f bin -o xorcist xorcist.asm
