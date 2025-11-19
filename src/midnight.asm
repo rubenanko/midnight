@@ -72,8 +72,10 @@ get_length:
     cmp dl,9
     jge .fake_check_cesar1
     jl .fake_check_cesar2
-    mov r11, rip
-    db 0x33 ;; mot de passe
+    mov r11, rip ;; sauvegarde de la position du mdp
+    db 0x33 
+    dq 0xD4649694C6B6A466 ;; mot de passe partie 1
+    dq 0x8AC8E6C86686A848 ;; mot de passe partie 2
     dq 0x6235411016105610 ;; instruction overlapping
     dq 0x8461338410134865 ;; instruction overlapping
 
