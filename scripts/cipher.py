@@ -10,6 +10,6 @@ def cipher_block(block):
 
 
 if __name__ == "__main__":
-    password = b"l0IHaYT5Cfuf1ER&"
+    password = b"l0IHaYT5Cfuf1ERo"
     print(f"HASH1: 0x{cipher_block(password[:8]):016X}")
     print(f"HASH2: 0x{cipher_block(password[8:]):016X}")
