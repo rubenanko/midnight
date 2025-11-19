@@ -66,10 +66,10 @@ cipher:
   ; on stocke le résultat rbx dans rdx 
   ; et on continue sur "rsi" désormais affecté à rdi
   dec r8
-  jnz .loop
+  jnz $ - 35 
   
   test r9, r9
-  jnz .exit ; 8 derniers octets de l'input déjà traités -> on sort
+  jnz $ + 25; 8 derniers octets de l'input déjà traités -> on sort
   
   ; Transition vers la seconde moitié
   mov rdx, rbx ; Sauvegarder le cipher des 8 premiers octets
@@ -77,7 +77,7 @@ cipher:
   mov rdi, rsi ; Charger les 8 derniers octets
   mov r8, 8 ; Réinitialiser le compteur
   mov r9, 1 ; Marquer qu'on est dans la seconde phase
-  jmp .loop
+  jmp $ - 63 
   
 .exit:
   pop rbp
