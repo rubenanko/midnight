@@ -72,7 +72,8 @@ get_length:
     cmp dl,9
     jge .fake_check_cesar1
     jl .fake_check_cesar2
-    db 0x33
+    mov r11, rip
+    db 0x33 ;; mot de passe
     dq 0x6235411016105610 ;; instruction overlapping
     dq 0x8461338410134865 ;; instruction overlapping
 
@@ -95,7 +96,10 @@ get_length:
     je .pre_fake_check_cesar2
     sub r8b,2
     cmp BYTE [rdi+rcx],r8b
-    jne .continue
+
+    lea rdx,rbp-0x100 ;; future adresse du code dans la stack, subtilement stockée
+
+    jne .continue ;; sortie dans le cas du mdp
     shr r8,8
     mov r10b,BYTE [rdi+rcx]
     imul r10,r10,2
@@ -105,7 +109,7 @@ get_length:
 
     jmp .loop_fake_check_cesar1
 
-    db 0x12
+    dw 0x5212
     dq 0x6235411016105610 ;; instruction overlapping
     dq 0x8461338410134865 ;; instruction overlapping
     dq 0x6235411016105610 ;; instruction overlapping
@@ -169,7 +173,10 @@ get_length:
 .continue:
     ;; preparation des registres
 
-    ;; generation de la fonction
+    ;; generation du code dans la stack
+
+    call rdx
+
 
     ;; cette portion est à réutiliser dans la partie critique en stack
     ;; print ok
