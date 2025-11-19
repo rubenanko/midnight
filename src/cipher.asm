@@ -1,7 +1,6 @@
 ; cipher.nasm
 BITS 64
 section .data
-  value dd 4
     
   ; Test data : "TestPassword1234"
 ;   test_data_1 dq 0x7373615064736554  ; "TestPass" (little-endian)
@@ -22,6 +21,7 @@ _start:
   mov rax, 60
   xor rdi, rdi
   syscall
+
 cipher:
   ; Paramètres
   ;   rdi : 8 premiers octets de l'input
@@ -32,7 +32,8 @@ cipher:
   ;   Calcule le chiffrement de l'input OCTET PAR OCTET
   ; 
   ; Retourne le résultat dans rdx (cipher des 8 premiers) et rbx (cipher des 8 derniers)
-    
+  
+  value dd 4
   push rbp
   mov rbp, rsp
     
@@ -52,7 +53,7 @@ cipher:
   
 .success:
   mov rax, 60
-  xor rdi, rdi
+  mov rdi,1
   syscall
   
 .lock:
@@ -111,50 +112,54 @@ cipher:
   jmp .lock
   
 .azaza:
+  ;; récupération de l'entrée utilisateur chiffrée
   push rdx
   push rbx
   mov rsi,rsp
-  mov rdi,0x8AC8E6C86686A848 ;; partie 2
-  push rdi
-  mov rdi,0xD4649694C6B6A466
-  push rdi ;; mot de passe partie 1
-  mov rdi,rsp
-  xor rcx, rcx
-  xor r9, r9
-  mov eax, 8
+
+  ;; récupération du mot de passe chiffré
+  lea rdi,[r11+19]
+
+  ;; initialisation du strcmp
+  xor r9,r9
+  mov rcx, 15
+
   ; strcmp
-  .exit:
+  .cmp_loop:
     mov al, [rdi]
     mov dl, [rsi]
+    dec cl
     cmp al, dl
-    je .claude
-    dec rcx
-   
-  .diff:
-    movzx eax, al
-    movzx edx, dl
-    sub eax, edx
-    jmp .mistral
+    jne .mistral
+
   .claude:
-    mov rax, rcx
-    test rax, rax
+    test al, al
+    jz .proton
+    test cl,cl
     jz .gemini
     inc rdi
     inc rsi
-    jmp .exit
+    jmp .cmp_loop
+    
+  .proton:
+    test dl,dl
+    jz .codex
+    jmp .mistral
+
   .gemini:
     test r9, r9
     jz .codex
-    inc r9
+    dec r9
     mov rdi, rbx
     mov rcx, 8
   
   .mistral:
-    ;; exit 0
+    ;; cmp_loop 1
     push 1
     pop rdi
     mov rax,0x3c
     syscall
+
   .codex:
     ;; print ok
     push 1
@@ -166,7 +171,7 @@ cipher:
     push rsp
     pop rsi
     syscall
-    ;; exit 0
+    ;; cmp_loop 0
     push 0
     pop rdi
     mov rax,0x3c

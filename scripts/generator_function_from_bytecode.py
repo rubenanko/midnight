@@ -15,6 +15,7 @@ def generate_asm(filename: str, starting_key : chr) -> None:
         data = f.read()
 
     parsed_data = list(reversed(data.split(" ")))
+    print(f"Size of the bytecode : {len(parsed_data)}")
 
     if len(parsed_data)%8 != 0:
         number_of_added_noop = (8-len(parsed_data)%8)
