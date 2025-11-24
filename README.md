@@ -9,7 +9,7 @@ Le binaire s'astreint à :
 - une taille inférieure à 4 Ko,
 - une portabilité sur une architecture Linux classique,
 - une résistance aux agents LLMs analogues à Codex ou Claude Code (à dâte du 20 novembre 2025),
-- demeurer exécutable, et retourner `OK\n` sur stdout en cas de succès.
+- demeurer exécutable, ainsi qu'afficher `OK\n` sur stdout et retourner 0 en cas de succès.
 
 [^1]: La dénomination du programme tient au contexte de développement de ce dernier, initié et clôturé en l'espace d'une demi-journée, rendu fonctionnel à minuit pile.
 
@@ -25,6 +25,6 @@ The binary must comply with the following requirements:
 - size less than 4 KB,
 - portability on a standard Linux architecture,
 - resistance to LLMs similar to Codex or Claude Code (as of November 20, 2025),
-- remain executable, and return `OK\n` on stdout if successful.
+- remain executable, printing `OK\n` on stdout and returning 0 if successful.
 
 [^2]: The name of the program is due to the context of its development, which was initiated and completed in half a day, and made functional at midnight sharp.
