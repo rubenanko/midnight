@@ -1,4 +1,4 @@
-# Midnight, *où le crackme d'une nuit* [^1]
+# Midnight, *ou le crackme d'une nuit* [^1]
 > Midnight est binaire ELF (x86-64) obfusqué mais analytiquement réversible, pensé pour entraîner à la rétroconception.
 ---
 ## Ambitions
@@ -14,7 +14,7 @@ Le binaire s'astreint à :
 [^1]: La dénomination du programme tient au contexte de développement de ce dernier, initié et clôturé en l'espace d'une demi-journée, rendu fonctionnel à minuit pile.
 
 ---
-# Midnight, *where the crackme of a night* [^2]
+# Midnight, *or the crackme of a night* [^2]
 > Midnight is an obfuscated but analytically reversible ELF (x86-64) binary, designed to train reverse engineering.
 ---
 ## Ambitions
